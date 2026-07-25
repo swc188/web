@@ -171,9 +171,6 @@
     }
     .content img { max-width: 100%; border-radius: 6px; }
     .content strong { color: #e6edf3; }
-    .content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
-    .content th, .content td { text-align: left; padding: 6px 10px; border: 1px solid #30363d; }
-    .content th { background: #161b22; color: #e6edf3; }
     .scroll-top {
       position: fixed;
       bottom: 30px; right: 30px;
@@ -188,6 +185,90 @@
     }
     .scroll-top.visible { opacity: 1; pointer-events: auto; }
     .scroll-top:hover { background: #388bfd; }
+    
+    /* Translation overlay */
+    .translation-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .translation-overlay.active { display: flex; }
+    .translation-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .translation-close {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: transparent;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .translation-close:hover { background: #30363d; color: #fff; }
+    .translation-lang {
+      display: inline-block;
+      background: #1f6feb;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      margin-bottom: 12px;
+    }
+    .translation-title {
+      font-size: 1.3rem;
+      color: #e6edf3;
+      margin-bottom: 12px;
+    }
+    .translation-desc {
+      color: #8b949e;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .translation-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .translation-btn {
+      flex: 1;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .translation-btn.primary {
+      background: #1f6feb;
+      color: #fff;
+      border-color: #1f6feb;
+    }
+    .translation-btn.primary:hover { background: #388bfd; }
+    .translation-btn.secondary {
+      background: #21262d;
+      color: #c9d1d9;
+    }
+    .translation-btn.secondary:hover { background: #30363d; }
+    
     footer {
       text-align: center;
       padding: 40px 24px;
@@ -235,6 +316,21 @@
     <div class="content" id="content"></div>
   </main>
   <button class="scroll-top" id="scrollTop" title="Back to top">&#8593;</button>
+  
+  <!-- Translation Overlay -->
+  <div class="translation-overlay" id="translationOverlay">
+    <div class="translation-card">
+      <button class="translation-close" onclick="closeTranslation()">&times;</button>
+      <span class="translation-lang" id="translationLang">中文</span>
+      <h3 class="translation-title" id="translationTitle"></h3>
+      <p class="translation-desc" id="translationDesc"></p>
+      <div class="translation-buttons">
+        <a class="translation-btn primary" id="translationVisit" href="#" target="_blank" rel="noopener noreferrer">前往查看</a>
+        <button class="translation-btn secondary" onclick="closeTranslation()">关闭</button>
+      </div>
+    </div>
+  </div>
+
   <footer>
     Original by <a href="https://github.com/codecrafters-io/build-your-own-x" target="_blank">codecrafters-io/build-your-own-x</a>
     &mdash; 内容实时同步自 GitHub
@@ -249,6 +345,7 @@
     var lastSha = null;
     var lastFetched = null;
     var refreshTimer = null;
+    var pendingUrl = null;
 
     var HEADING_TRANSLATIONS = {
       'Build your own `Distributed Systems`': '从零构建分布式系统',
@@ -281,6 +378,40 @@
       'Build your own `Voxel Engine`': '从零构建体素引擎',
       'Build your own `Web Browser`': '从零构建网页浏览器',
       'Build your own `Web Server`': '从零构建 Web 服务器'
+    };
+
+    // Tutorial descriptions translation map
+    var TUTORIAL_DESCRIPTIONS = {
+      'Building Your Own Kafka-like System From Scratch: A Step-by-Step Guide': '从零构建类 Kafka 系统：逐步指南',
+      'Introduction to Ray Tracing: a Simple Method for Creating 3D Images': '光线追踪入门：创建 3D 图像的简单方法',
+      'How OpenGL works: software rendering in 500 lines of code': 'OpenGL 工作原理：500 行代码的软件渲染',
+      'Raycasting engine of Wolfenstein 3D': '德军总部 3D 的光线投射引擎',
+      'Physically Based Rendering:From Theory To Implementation': '基于物理的渲染：从理论到实现',
+      'Ray Tracing in One Weekend': '一个周末学会光线追踪',
+      'A Large Language Model (LLM)': '大型语言模型 (LLM)',
+      'Diffusion Models for Image Generation': '用于图像生成的扩散模型',
+      'RAG for Document Search': '面向文档搜索的 RAG',
+      'A BitTorrent client in Python 3.5': 'Python 3.5 实现的 BT 客户端',
+      'Building Blockchain in Go': '用 Go 构建区块链',
+      'Learn Blockchains by Building One': '通过构建区块链来学习区块链',
+      'Let\'s Build a Simple Database': '让我们构建一个简单的数据库',
+      'Linux containers in 500 lines of code': '500 行代码的 Linux 容器',
+      'How to write an emulator (CHIP-8 interpreter)': '如何编写模拟器（CHIP-8 解释器）',
+      'WTF is JSX (Let\'s Build a JSX Renderer)': 'JSX 是什么（让我们构建 JSX 渲染器）',
+      'A DIY guide to build your own React': '自制 React 指南',
+      'Handmade Hero': '手工英雄',
+      'Reimplementing "git clone" in Haskell from the bottom up': '用 Haskell 从零实现 git clone',
+      'Let\'s code a TCP/IP stack': '让我们编写 TCP/IP 协议栈',
+      'A Neural Network in 11 lines of Python': '11 行 Python 实现的神经网络',
+      'Operating Systems: From 0 to 1': '操作系统：从零到一',
+      'Video Game Physics Tutorial': '游戏物理教程',
+      'mal - Make a Lisp': 'mal - 制作一个 Lisp',
+      'A Regular Expression Matcher': '正则表达式匹配器',
+      'Tutorial - Write a Shell in C': '教程 - 用 C 编写 Shell',
+      'Build Your Own Text Editor': '构建你自己的文本编辑器',
+      'Let\'s build a browser engine': '让我们构建浏览器引擎',
+      'Writing a Web Server from Scratch': '从零编写 Web 服务器',
+      'From NAND to Tetris: Building a Modern Computer From First Principles': '从与非门到 Tetris：从第一原理构建现代计算机'
     };
 
     function detectLang() {
@@ -333,6 +464,22 @@
       });
     }
 
+    function showTranslation(title, desc, url) {
+      if (currentLang !== 'zh') return;
+      
+      pendingUrl = url;
+      document.getElementById('translationLang').textContent = '中文介绍';
+      document.getElementById('translationTitle').textContent = title;
+      document.getElementById('translationDesc').textContent = desc;
+      document.getElementById('translationVisit').href = url;
+      document.getElementById('translationOverlay').classList.add('active');
+    }
+
+    function closeTranslation() {
+      document.getElementById('translationOverlay').classList.remove('active');
+      pendingUrl = null;
+    }
+
     function render() {
       var md = cachedMd;
       if (currentLang === 'zh') md = translateMarkdown(md);
@@ -340,6 +487,25 @@
       document.getElementById('tocArea').style.display = 'block';
       document.getElementById('statusArea').style.display = 'none';
       buildTOC(document.querySelectorAll('.content h4'));
+      
+      // Add click handlers to tutorial links for Chinese users
+      if (currentLang === 'zh') {
+        var links = document.querySelectorAll('.content a');
+        for (var i = 0; i < links.length; i++) {
+          var link = links[i];
+          var href = link.getAttribute('href');
+          if (href && href.indexOf('http') === 0) {
+            var text = link.textContent.trim();
+            var translatedTitle = TUTORIAL_DESCRIPTIONS[text] || text;
+            link.addEventListener('click', function(e) {
+              e.preventDefault();
+              var linkText = this.textContent.trim();
+              var translatedDesc = TUTORIAL_DESCRIPTIONS[linkText] || '这是一个高质量的技术教程，教你从零开始构建这项技术。';
+              showTranslation(linkText, translatedDesc, this.href);
+            });
+          }
+        }
+      }
     }
 
     function showError(msg) {
