@@ -330,8 +330,7 @@
         a.textContent = text;
         a.onclick = function(e) {
           e.preventDefault();
-          var target = document.getElementById(id);
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          h.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
         li.appendChild(a);
         toc.appendChild(li);
