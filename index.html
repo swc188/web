@@ -149,6 +149,24 @@
     .content p { margin: 8px 0; }
     .content a { color: #58a6ff; text-decoration: none; }
     .content a:hover { text-decoration: underline; }
+    .translate-link {
+      display: inline-block;
+      margin-left: 4px;
+      padding: 0 5px;
+      font-size: 0.7rem;
+      color: #8b949e;
+      border: 1px solid #30363d;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      vertical-align: middle;
+      transition: all 0.15s;
+    }
+    .translate-link:hover {
+      color: #58a6ff;
+      border-color: #58a6ff;
+      text-decoration: none;
+    }
     .content ul, .content ol { padding-left: 24px; margin: 8px 0; }
     .content li { margin: 4px 0; overflow-wrap: break-word; }
     .content code { background: #343941; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
@@ -340,6 +358,28 @@
       document.getElementById('tocArea').style.display = 'block';
       document.getElementById('statusArea').style.display = 'none';
       buildTOC(document.querySelectorAll('.content h4'));
+      if (currentLang === 'zh') addTranslateButtons();
+    }
+
+    function addTranslateButtons() {
+      var links = document.querySelectorAll('.content a[href^="http"]');
+      for (var i = 0; i < links.length; i++) {
+        var link = links[i];
+        var href = link.getAttribute('href');
+        var btn = document.createElement('span');
+        btn.className = 'translate-link';
+        btn.textContent = '译';
+        btn.title = '通过 Google 翻译查看此页面';
+        btn.onclick = (function(url) {
+          return function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.open('https://translate.google.com/translate?hl=zh-CN&sl=auto&tl=zh-CN&u=' + encodeURIComponent(url), '_blank');
+          };
+        })(href);
+        link.insertAdjacentHTML('afterend', ' ');
+        link.parentNode.insertBefore(btn, link.nextSibling);
+      }
     }
 
     function showError(msg) {
