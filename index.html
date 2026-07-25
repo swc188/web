@@ -36,7 +36,7 @@
   <link rel="alternate" hreflang="zh-Hans" href="https://swc188.github.io/web/">
   <link rel="alternate" hreflang="x-default" href="https://swc188.github.io/web/">
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" async></script>
 
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
@@ -72,9 +72,6 @@
       background: #0d1117;
       color: #c9d1d9;
       line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
     }
     /* Skip to content link for accessibility */
     .skip-link {
@@ -462,18 +459,22 @@
       document.getElementById('statusArea').style.display = 'none';
       buildTOC(document.querySelectorAll('.content h4'));
       
-      // Add rel="noopener noreferrer" to external links
+      // Add rel="noopener noreferrer" to external links (only first 50)
       var links = document.querySelectorAll('.content a');
-      links.forEach(function(link) {
+      var linkCount = Math.min(links.length, 50);
+      for (var i = 0; i < linkCount; i++) {
+        var link = links[i];
         if (link.hostname && link.hostname !== window.location.hostname) {
           link.setAttribute('target', '_blank');
           link.setAttribute('rel', 'noopener noreferrer');
         }
-      });
+      }
       
-      // Lazy load images
+      // Lazy load images (only first 20 to avoid performance issues)
       var images = document.querySelectorAll('.content img');
-      images.forEach(function(img) {
+      var count = Math.min(images.length, 20);
+      for (var i = 0; i < count; i++) {
+        var img = images[i];
         if (!img.hasAttribute('loading')) {
           img.setAttribute('loading', 'lazy');
           if (img.complete) {
@@ -484,7 +485,7 @@
             });
           }
         }
-      });
+      }
     }
 
     function showError(msg) {
