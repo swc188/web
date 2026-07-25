@@ -3,15 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Build Your Own X</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <title>Build Your Own X - 从零构建你感兴趣的技术 | 30+ 技术实现教程合集</title>
+  <meta name="description" content="汇集 30+ 种热门技术的从零实现教程：3D 渲染器、操作系统、数据库、区块链、编译器、神经网络、Docker 等。循序渐进，代码驱动——凡我不能创造的，我就不能理解。">
+  <meta name="keywords" content="Build Your Own X, 编程教程, 从零构建, 操作系统, 编译器, 数据库, 区块链, 神经网络, 3D渲染, Docker, Redis, Git, 编程语言, 技术教程, GitHub">
+  <meta name="author" content="codecrafters-io">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <meta name="googlebot" content="index, follow">
+  <link rel="canonical" href="https://swc188.github.io/web/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swc188.github.io/web/">
+  <meta property="og:title" content="Build Your Own X - 从零构建任何技术">
+  <meta property="og:description" content="30+ 种技术的从零实现教程合集。操作系统、编译器、数据库、区块链、神经网络——凡我不能创造的，我就不能理解。">
+  <meta property="og:image" content="https://codecrafters.io/images/new-ccgithub-banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Build Your Own X">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://swc188.github.io/web/">
+  <meta name="twitter:title" content="Build Your Own X - 从零构建任何技术">
+  <meta name="twitter:description" content="30+ 种技术的从零实现教程合集。凡我不能创造的，我就不能理解。">
+  <meta name="twitter:image" content="https://codecrafters.io/images/new-ccgithub-banner.png">
+  <meta name="twitter:site" content="@codecraftersio">
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="en" href="https://swc188.github.io/web/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://swc188.github.io/web/">
+  <link rel="alternate" hreflang="x-default" href="https://swc188.github.io/web/">
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Build Your Own X - 从零构建你感兴趣的技术",
+    "description": "汇集 30+ 种热门技术的从零实现教程合集",
+    "url": "https://swc188.github.io/web/",
+    "inLanguage": ["zh-CN", "en-US"],
+    "about": {
+      "@type": "Thing",
+      "name": "Build Your Own X"
+    },
+    "mainEntity": {
+      "@type": "CollectionPage",
+      "name": "Build Your Own X Tutorials",
+      "numberOfItems": 30
+    }
+  }
+  </script>
+
+  <!-- Performance: Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://api.github.com">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://api.github.com">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: #0d1117;
       color: #c9d1d9;
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Skip to content link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #1f6feb;
+      color: #fff;
+      padding: 8px 16px;
+      z-index: 1000;
+      transition: top 0.3s;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .skip-link:focus {
+      top: 0;
     }
     header {
       background: #161b22;
@@ -83,6 +162,23 @@
     .update-badge.new { color: #3fb950; }
     .header-inner a.gh-link { color: #8b949e; text-decoration: none; font-size: 0.82rem; }
     .header-inner a.gh-link:hover { color: #58a6ff; }
+    /* Share buttons */
+    .share-btns { display: flex; gap: 6px; align-items: center; }
+    .share-btn {
+      background: transparent;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .share-btn:hover { background: #30363d; color: #c9d1d9; }
     main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
     .loading-indicator {
       text-align: center;
@@ -170,6 +266,8 @@
       border-radius: 0 6px 6px 0;
     }
     .content img { max-width: 100%; border-radius: 6px; }
+    .content img[loading="lazy"] { opacity: 0; transition: opacity 0.3s; }
+    .content img[loading="lazy"].loaded { opacity: 1; }
     .content strong { color: #e6edf3; }
     .content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
     .content th, .content td { text-align: left; padding: 6px 10px; border: 1px solid #30363d; }
@@ -202,9 +300,24 @@
       .header-right { gap: 8px; }
       .update-badge { display: none; }
     }
+
+    /* Print styles */
+    @media print {
+      header, footer, .scroll-top, .share-btns, .refresh-btn { display: none !important; }
+      body { background: #fff; color: #000; }
+      .content a { color: #000; text-decoration: underline; }
+      main { max-width: 100%; padding: 0; }
+    }
+
+    /* Focus styles for accessibility */
+    *:focus-visible {
+      outline: 2px solid #58a6ff;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
+  <a href="#content" class="skip-link">Skip to content</a>
   <header>
     <div class="header-inner">
       <div class="header-left">
@@ -219,6 +332,14 @@
         <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="刷新内容">
           <span class="icon">&#8635;</span> 刷新
         </button>
+        <div class="share-btns">
+          <a class="share-btn" href="#" id="shareTwitter" target="_blank" rel="noopener noreferrer" title="分享到 Twitter">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a class="share-btn" href="#" id="shareWechat" title="分享到微信">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.335c-3.878 0-7.02 2.746-7.02 6.14 0 3.393 3.142 6.14 7.02 6.14.693 0 1.363-.102 2.001-.26a.636.636 0 0 1 .526.072l1.4.82a.236.236 0 0 0 .123.04c.118 0 .213-.098.213-.216a.53.53 0 0 0-.036-.157l-.287-1.086a.434.434 0 0 1 .156-.49C20.945 20.94 22 19.13 22 16.466c0-3.393-3.142-6.14-7.02-6.14h.298zm-2.19 3.376c.497 0 .9.409.9.914a.907.907 0 0 1-.9.914.907.907 0 0 1-.9-.914c0-.505.403-.914.9-.914zm4.38 0c.497 0 .9.409.9.914a.907.907 0 0 1-.9.914.907.907 0 0 1-.9-.914c0-.505.403-.914.9-.914z"/></svg>
+          </a>
+        </div>
         <a class="gh-link" href="https://github.com/codecrafters-io/build-your-own-x" target="_blank">GitHub</a>
       </div>
     </div>
@@ -340,6 +461,30 @@
       document.getElementById('tocArea').style.display = 'block';
       document.getElementById('statusArea').style.display = 'none';
       buildTOC(document.querySelectorAll('.content h4'));
+      
+      // Add rel="noopener noreferrer" to external links
+      var links = document.querySelectorAll('.content a');
+      links.forEach(function(link) {
+        if (link.hostname && link.hostname !== window.location.hostname) {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        }
+      });
+      
+      // Lazy load images
+      var images = document.querySelectorAll('.content img');
+      images.forEach(function(img) {
+        if (!img.hasAttribute('loading')) {
+          img.setAttribute('loading', 'lazy');
+          if (img.complete) {
+            img.classList.add('loaded');
+          } else {
+            img.addEventListener('load', function() {
+              img.classList.add('loaded');
+            });
+          }
+        }
+      });
     }
 
     function showError(msg) {
@@ -435,6 +580,19 @@
       }, REFRESH_INTERVAL);
     }
 
+    // Share buttons functionality
+    function initShareButtons() {
+      var url = encodeURIComponent('https://swc188.github.io/web/');
+      var title = encodeURIComponent('Build Your Own X - 从零构建任何技术');
+      var text = encodeURIComponent('30+ 种技术的从零实现教程合集');
+      
+      document.getElementById('shareTwitter').href = 
+        'https://twitter.com/intent/tweet?url=' + url + '&text=' + title;
+      document.getElementById('shareWechat').onclick = function() {
+        alert('请截图后分享到微信');
+      };
+    }
+
     currentLang = detectLang();
     switchLang(currentLang);
 
@@ -449,6 +607,7 @@
 
     fetchReadme();
     startAutoRefresh();
+    initShareButtons();
 
     window.addEventListener('scroll', function () {
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);

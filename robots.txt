@@ -1,0 +1,6 @@
+# robots.txt for Build Your Own X website
+
+User-agent: *
+Allow: /
+
+Sitemap: https://swc188.github.io/web/sitemap.xml
