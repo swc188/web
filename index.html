@@ -324,6 +324,24 @@
         .replace(/^-+|-+$/g, '');
     }
 
+    var EN_ZH_ID_MAP = {};
+
+    function buildIdMap() {
+      EN_ZH_ID_MAP = {};
+      for (var en in HEADING_TRANSLATIONS) {
+        if (!HEADING_TRANSLATIONS.hasOwnProperty(en)) continue;
+        var enText = en.replace(/`/g, '');
+        var zhText = HEADING_TRANSLATIONS[en];
+        var enId = githubHeadingId(enText);
+        var zhId = githubHeadingId(zhText);
+        EN_ZH_ID_MAP[enId] = zhId;
+        EN_ZH_ID_MAP[zhId] = enId;
+      }
+      EN_ZH_ID_MAP['uncategorized'] = '未分类';
+      EN_ZH_ID_MAP['未分类'] = 'uncategorized';
+    }
+    buildIdMap();
+
     function buildTOC(headings) {
       var toc = document.getElementById('toc-list');
       toc.innerHTML = '';
@@ -347,8 +365,11 @@
     function scrollToHash() {
       var hash = window.location.hash;
       if (!hash || hash === '#') return;
-      var id = hash.substring(1);
+      var id = decodeURIComponent(hash.substring(1));
       var el = document.getElementById(id);
+      if (!el && EN_ZH_ID_MAP[id]) {
+        el = document.getElementById(EN_ZH_ID_MAP[id]);
+      }
       if (el) {
         setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
       }
@@ -480,6 +501,9 @@
       var id = href.substring(1);
       if (!id) return;
       var heading = document.getElementById(id);
+      if (!heading && EN_ZH_ID_MAP[id]) {
+        heading = document.getElementById(EN_ZH_ID_MAP[id]);
+      }
       if (heading) {
         e.preventDefault();
         heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
