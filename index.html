@@ -317,12 +317,19 @@
       return result;
     }
 
+    function githubHeadingId(text) {
+      return text.toLowerCase()
+        .replace(/[^a-z0-9\u4e00-\u9fff -]/g, '')
+        .replace(/ /g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
     function buildTOC(headings) {
       var toc = document.getElementById('toc-list');
       toc.innerHTML = '';
       headings.forEach(function (h) {
         var text = h.textContent.trim();
-        var id = text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+        var id = githubHeadingId(text);
         h.id = id;
         var li = document.createElement('li');
         var a = document.createElement('a');
@@ -453,6 +460,20 @@
 
     fetchReadme();
     startAutoRefresh();
+
+    document.getElementById('content').addEventListener('click', function(e) {
+      var el = e.target;
+      if (el.tagName !== 'A') return;
+      var href = el.getAttribute('href');
+      if (!href || href.charAt(0) !== '#') return;
+      var id = href.substring(1);
+      if (!id) return;
+      var heading = document.getElementById(id);
+      if (heading) {
+        e.preventDefault();
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
 
     window.addEventListener('scroll', function () {
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
