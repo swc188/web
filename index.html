@@ -259,8 +259,8 @@
 <section class="hero">
   <h1>GitHub "代码手搓万物"</h1>
   <p>
-    380K+ Star 开源项目 -- 数据库、操作系统、游戏、AI 模型全都能手搓。
-    200+ 篇优质教程，涵盖 9 大领域，全部免费。
+    <span id="hero-stars">380K+</span> Star 开源项目 -- 数据库、操作系统、游戏、AI 模型全都能手搓。
+    <span id="hero-tutorials">200+</span> 篇优质教程，涵盖 <span id="hero-areas">9</span> 大领域，全部免费。
   </p>
   <div class="hero-cta">
     <a class="btn-primary" href="app.html" target="_blank">立刻开始学习</a>
@@ -549,6 +549,8 @@
       }
       document.getElementById('stat-classifications').textContent = classifications;
       document.getElementById('stat-tutorials').textContent = formatNum(tutorials);
+      document.getElementById('hero-areas').textContent = classifications;
+      document.getElementById('hero-tutorials').textContent = formatNum(tutorials);
     })
     .catch(function() {});
 
@@ -556,7 +558,9 @@
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.stargazers_count) {
-        document.getElementById('stat-stars').textContent = formatNum(data.stargazers_count);
+        var s = formatNum(data.stargazers_count);
+        document.getElementById('stat-stars').textContent = s;
+        document.getElementById('hero-stars').textContent = s;
       }
     })
     .catch(function() {});
