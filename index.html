@@ -344,6 +344,16 @@
       });
     }
 
+    function scrollToHash() {
+      var hash = window.location.hash;
+      if (!hash || hash === '#') return;
+      var id = hash.substring(1);
+      var el = document.getElementById(id);
+      if (el) {
+        setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+      }
+    }
+
     function render() {
       var md = cachedMd;
       if (currentLang === 'zh') md = translateMarkdown(md);
@@ -351,6 +361,7 @@
       document.getElementById('tocArea').style.display = 'block';
       document.getElementById('statusArea').style.display = 'none';
       buildTOC(document.querySelectorAll('.content h4'));
+      scrollToHash();
     }
 
     function showError(msg) {
@@ -474,6 +485,8 @@
         heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
+
+    window.addEventListener('hashchange', scrollToHash);
 
     window.addEventListener('scroll', function () {
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
