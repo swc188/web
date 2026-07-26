@@ -129,11 +129,27 @@
       gap: 16px;
     }
     .highlight-card {
+      display: block;
       background: #fff;
       border-radius: 12px;
       padding: 24px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s, transform 0.2s;
+      position: relative;
     }
+    .highlight-card:hover { box-shadow: 0 8px 28px rgba(102,126,234,0.25); transform: translateY(-3px); text-decoration: none; }
+    .highlight-card::after {
+      content: '\2192';
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.2rem;
+      color: #667eea;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      transform: translateX(-6px);
+    }
+    .highlight-card:hover::after { opacity: 1; transform: translateX(0); }
     .highlight-card .h-icon { font-size: 1.6rem; margin-bottom: 8px; }
     .highlight-card .h-title { font-size: 1.05rem; color: #1a1a2e; font-weight: 700; margin-bottom: 8px; }
     .highlight-card .h-desc { font-size: 0.9rem; color: #666; line-height: 1.6; }
@@ -356,54 +372,54 @@
     <h2 class="section-title">热门领域详解</h2>
     <p class="section-subtitle">挑选几个最实用的方向，让你感受一下内容的含金量</p>
     <div class="highlight-grid">
-      <div class="highlight-card">
+      <a href="app.html#build-your-own-database" target="_blank" class="highlight-card">
         <div class="h-icon">🗄️</div>
         <div class="h-title">手搓数据库</div>
         <div class="h-desc">从最简单的 KV 存储到 SQL 解析、索引优化，再到分布式一致性算法。13 篇教程覆盖全部层次。</div>
         <div class="h-tags">
           <span class="tag">SQL</span><span class="tag">NoSQL</span><span class="tag">分布式</span><span class="tag">Redis</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="app.html#build-your-own-operating-system" target="_blank" class="highlight-card">
         <div class="h-icon">💻</div>
         <div class="h-title">手搓操作系统</div>
         <div class="h-desc">500 行 C 启动一个最小 OS。涵盖内核、进程调度、文件系统、内存管理、设备驱动全栈内容。</div>
         <div class="h-tags">
           <span class="tag">内核</span><span class="tag">文件系统</span><span class="tag">进程调度</span><span class="tag">网络栈</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="app.html#build-your-own-game" target="_blank" class="highlight-card">
         <div class="h-icon">🎮</div>
         <div class="h-title">手搓游戏引擎</div>
         <div class="h-desc">从贪吃蛇到 3D 引擎，覆盖 2D/3D 图形、物理碰撞、精灵动画、关卡设计等完整游戏开发流程。</div>
         <div class="h-tags">
           <span class="tag">2D</span><span class="tag">3D</span><span class="tag">OpenGL</span><span class="tag">物理引擎</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="app.html#build-your-own-neural-network" target="_blank" class="highlight-card">
         <div class="h-icon">🧠</div>
         <div class="h-title">手搓神经网络</div>
         <div class="h-desc">从感知机到卷积网络，再到 LSTM 和 GAN。16 篇教程手把手带你理解深度学习底层原理。</div>
         <div class="h-tags">
           <span class="tag">CNN</span><span class="tag">RNN</span><span class="tag">LSTM</span><span class="tag">GAN</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="app.html#build-your-own-programming-language" target="_blank" class="highlight-card">
         <div class="h-icon">🛠️</div>
         <div class="h-title">手搓编程语言</div>
         <div class="h-desc">27 篇教程涵盖解释器、编译器、虚拟机实现。从 Brainfuck 到 Lisp，再到自制语言。</div>
         <div class="h-tags">
           <span class="tag">编译器</span><span class="tag">解释器</span><span class="tag">VM</span><span class="tag">DSL</span>
         </div>
-      </div>
-      <div class="highlight-card">
+      </a>
+      <a href="app.html#build-your-own-web-server" target="_blank" class="highlight-card">
         <div class="h-icon">🌐</div>
         <div class="h-title">手搓 Web 服务器</div>
         <div class="h-desc">500 行代码实现 HTTP 服务器。理解反向代理、负载均衡、缓存策略、消息队列等核心概念。</div>
         <div class="h-tags">
           <span class="tag">HTTP</span><span class="tag">反向代理</span><span class="tag">缓存</span><span class="tag">消息队列</span>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </section>
