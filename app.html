@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Own X</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .header-inner h1 {
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, #58a6ff, #bc8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+    .lang-switch {
+      display: flex;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 0.78rem;
+    }
+    .lang-switch button {
+      background: transparent;
+      color: #8b949e;
+      border: none;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-switch button.active { background: #1f6feb; color: #fff; }
+    .lang-switch button:hover:not(.active) { color: #c9d1d9; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .refresh-btn {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { background: #30363d; color: #fff; }
+    .refresh-btn.loading { opacity: 0.5; pointer-events: none; }
+    .refresh-btn .icon { display: inline-block; transition: transform 0.6s; font-size: 0.9rem; }
+    .refresh-btn.loading .icon { animation: spin 0.8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .update-badge {
+      font-size: 0.72rem;
+      color: #8b949e;
+      white-space: nowrap;
+    }
+    .update-badge.new { color: #3fb950; }
+    .header-inner a.gh-link { color: #8b949e; text-decoration: none; font-size: 0.82rem; }
+    .header-inner a.gh-link:hover { color: #58a6ff; }
+    main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+    .loading-indicator {
+      text-align: center;
+      padding: 80px 0;
+      color: #8b949e;
+    }
+    .loading-indicator .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #30363d;
+      border-top-color: #58a6ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    .error-box {
+      background: #161b22;
+      border: 1px solid #f85149;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      color: #f85149;
+    }
+    .error-box button {
+      margin-top: 12px;
+      padding: 8px 20px;
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .toc {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px 28px;
+      margin-bottom: 32px;
+    }
+    .toc h2 { font-size: 1.1rem; margin-bottom: 12px; color: #e6edf3; }
+    .toc ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 4px 16px;
+    }
+    .toc li a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.88rem;
+      display: block;
+      padding: 3px 0;
+    }
+    .toc li a:hover { text-decoration: underline; }
+    .content h1, .content h2, .content h3 {
+      color: #e6edf3;
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+    .content h1 { font-size: 1.8rem; border-bottom-width: 1px; border-color: #30363d; }
+    .content h2 { font-size: 1.4rem; }
+    .content h3 { font-size: 1.15rem; border-bottom: none; }
+    .content h4 { font-size: 1.05rem; margin: 20px 0 10px; color: #e6edf3; }
+    .content p { margin: 8px 0; }
+    .content a { color: #58a6ff; text-decoration: none; }
+    .content a:hover { text-decoration: underline; }
+    .content ul, .content ol { padding-left: 24px; margin: 8px 0; }
+    .content li { margin: 4px 0; overflow-wrap: break-word; }
+    .content code { background: #343941; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    .content pre {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    .content pre code { background: none; padding: 0; }
+    .content blockquote {
+      border-left: 3px solid #58a6ff;
+      margin: 12px 0;
+      padding: 8px 16px;
+      color: #8b949e;
+      background: #161b22;
+      border-radius: 0 6px 6px 0;
+    }
+    .content img { max-width: 100%; border-radius: 6px; }
+    .content strong { color: #e6edf3; }
+    .content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
+    .content th, .content td { text-align: left; padding: 6px 10px; border: 1px solid #30363d; }
+    .content th { background: #161b22; color: #e6edf3; }
+    .scroll-top {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      width: 40px; height: 40px;
+      background: #1f6feb; color: #fff;
+      border: none; border-radius: 50%;
+      cursor: pointer; font-size: 1.1rem;
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(31,111,235,0.4);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .scroll-top.visible { opacity: 1; pointer-events: auto; }
+    .scroll-top:hover { background: #388bfd; }
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: #484f58;
+      font-size: 0.85rem;
+      border-top: 1px solid #21262d;
+    }
+    footer a { color: #58a6ff; text-decoration: none; }
+    @media (max-width: 640px) {
+      .header-inner h1 { font-size: 1rem; }
+      .toc ul { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      .header-right { gap: 8px; }
+      .update-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <h1 id="header-title">Build Your Own X</h1>
+        <div class="lang-switch">
+          <button id="btn-zh" onclick="switchLang('zh')">中</button>
+          <button id="btn-en" class="active" onclick="switchLang('en')">EN</button>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="update-badge" id="updateBadge"></span>
+        <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" title="刷新内容">
+          <span class="icon">&#8635;</span> 刷新
+        </button>
+        <a class="gh-link" href="https://github.com/codecrafters-io/build-your-own-x" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div id="statusArea" class="loading-indicator">
+      <div class="spinner"></div>
+      <div>正在获取最新内容...</div>
+    </div>
+    <nav class="toc" id="tocArea" style="display:none;">
+      <h2 id="toc-title">Table of Contents</h2>
+      <ul id="toc-list"></ul>
+    </nav>
+    <div class="content" id="content"></div>
+  </main>
+  <button class="scroll-top" id="scrollTop" title="Back to top">&#8593;</button>
+  <footer>
+    Original by <a href="https://github.com/codecrafters-io/build-your-own-x" target="_blank">codecrafters-io/build-your-own-x</a>
+    &mdash; 内容实时同步自 GitHub
+  </footer>
+
+  <script>
+    var README_URL = 'https://cdn.jsdelivr.net/gh/codecrafters-io/build-your-own-x@master/README.md';
+    var COMMITS_API = 'https://api.github.com/repos/codecrafters-io/build-your-own-x/commits?path=README.md&per_page=1';
+    var REFRESH_INTERVAL = 10 * 60 * 1000;
+    var currentLang = 'en';
+    var cachedMd = null;
+    var lastSha = null;
+    var lastFetched = null;
+    var refreshTimer = null;
+
+    var HEADING_TRANSLATIONS = {
+      'Build your own `Distributed Systems`': '从零构建分布式系统',
+      'Build your own `3D Renderer`': '从零构建 3D 渲染器',
+      'Build your own `AI Model`': '从零构建 AI 模型',
+      'Build your own `Augmented Reality`': '从零构建增强现实',
+      'Build your own `BitTorrent Client`': '从零构建 BT 客户端',
+      'Build your own `Blockchain / Cryptocurrency`': '从零构建区块链与加密货币',
+      'Build your own `Bot`': '从零构建机器人',
+      'Build your own `Command-Line Tool`': '从零构建命令行工具',
+      'Build your own `Database`': '从零构建数据库',
+      'Build your own `Docker`': '从零构建容器',
+      'Build your own `Emulator / Virtual Machine`': '从零构建模拟器与虚拟机',
+      'Build your own `Front-end Framework / Library`': '从零构建前端框架与库',
+      'Build your own `Game`': '从零构建游戏',
+      'Build your own `Git`': '从零构建版本控制',
+      'Build your own `Memory Allocator`': '从零构建内存分配器',
+      'Build your own `Network Stack`': '从零构建网络协议栈',
+      'Build your own `Neural Network`': '从零构建神经网络',
+      'Build your own `Operating System`': '从零构建操作系统',
+      'Build your own `Physics Engine`': '从零构建物理引擎',
+      'Build your own `Processor`': '从零构建处理器',
+      'Build your own `Programming Language`': '从零构建编程语言',
+      'Build your own `Regex Engine`': '从零构建正则引擎',
+      'Build your own `Search Engine`': '从零构建搜索引擎',
+      'Build your own `Shell`': '从零构建命令行解释器',
+      'Build your own `Template Engine`': '从零构建模板引擎',
+      'Build your own `Text Editor`': '从零构建文本编辑器',
+      'Build your own `Visual Recognition System`': '从零构建视觉识别系统',
+      'Build your own `Voxel Engine`': '从零构建体素引擎',
+      'Build your own `Web Browser`': '从零构建网页浏览器',
+      'Build your own `Web Server`': '从零构建 Web 服务器'
+    };
+
+    function detectLang() {
+      var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+      return nav.startsWith('zh') ? 'zh' : 'en';
+    }
+
+    function switchLang(lang) {
+      currentLang = lang;
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+      document.getElementById('header-title').textContent = lang === 'zh' ? '从零构建你感兴趣的技术' : 'Build Your Own X';
+      document.getElementById('toc-title').textContent = lang === 'zh' ? '目录' : 'Table of Contents';
+      if (cachedMd) render();
+    }
+
+    function translateMarkdown(md) {
+      var result = md;
+      result = result.replace(/## Build your own.*\n/, '## 从零构建 <插入你感兴趣的技术>\n');
+      result = result.replace(/This repository is a compilation.*from scratch\./, '本仓库汇集了一系列高质量的、循序渐进的技术指南，教你从零开始重新创造我们喜爱的技术。');
+      result = result.replace(/> \*What I cannot create, I do not understand — Richard Feynman\.\*/, '> *"凡我不能创造的，我就不能理解。" —— 理查德·费曼*');
+      result = result.replace(/It's a great way to learn\./, '这是绝佳的学习方式。');
+      result = result.replace(/## Tutorials/, '## 教程列表');
+      result = result.replace(/## Contribute\b/, '## 贡献指南');
+      result = result.replace(/\* Submissions welcome, just send a PR, or \[create an issue\].*\n\* Help us review \[pending submissions\].*reactions"/m, '* 欢迎提交 PR，或[创建 Issue](https://github.com/codecrafters-io/build-your-own-x/issues/new)\n* 通过评论和"reactions"帮助我们审核[待处理的提交](https://github.com/codecrafters-io/build-your-own-x/issues)');
+      result = result.replace(/## Origins & License/, '## 起源与许可');
+      result = result.replace(/This repository is the work of.*this work\./, '本仓库是[众多贡献者](https://github.com/codecrafters-io/build-your-own-x/graphs/contributors)的共同成果。由 [Daniel Stefanovic](https://github.com/danistefanovic) 发起，现由 [CodeCrafters, Inc.](https://codecrafters.io) 维护。在法律允许的范围内，[CodeCrafters, Inc.](https://codecrafters.io) 已放弃本作品的所有版权及相关权利。');
+      result = result.replace(/#### Uncategorized/, '#### 未分类');
+      for (var en in HEADING_TRANSLATIONS) {
+        if (!HEADING_TRANSLATIONS.hasOwnProperty(en)) continue;
+        var escaped = en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        result = result.replace(new RegExp('#### ' + escaped, 'g'), '#### ' + HEADING_TRANSLATIONS[en]);
+      }
+      return result;
+    }
+
+    function githubHeadingId(text) {
+      return text.toLowerCase()
+        .replace(/[^a-z0-9\u4e00-\u9fff -]/g, '')
+        .replace(/ /g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    var EN_ZH_ID_MAP = {};
+
+    function buildIdMap() {
+      EN_ZH_ID_MAP = {};
+      for (var en in HEADING_TRANSLATIONS) {
+        if (!HEADING_TRANSLATIONS.hasOwnProperty(en)) continue;
+        var enText = en.replace(/`/g, '');
+        var zhText = HEADING_TRANSLATIONS[en];
+        var enId = githubHeadingId(enText);
+        var zhId = githubHeadingId(zhText);
+        EN_ZH_ID_MAP[enId] = zhId;
+        EN_ZH_ID_MAP[zhId] = enId;
+      }
+      EN_ZH_ID_MAP['uncategorized'] = '未分类';
+      EN_ZH_ID_MAP['未分类'] = 'uncategorized';
+    }
+    buildIdMap();
+
+    function buildTOC(headings) {
+      var toc = document.getElementById('toc-list');
+      toc.innerHTML = '';
+      headings.forEach(function (h) {
+        var text = h.textContent.trim();
+        var id = githubHeadingId(text);
+        h.id = id;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = text;
+        a.onclick = function(e) {
+          e.preventDefault();
+          h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        li.appendChild(a);
+        toc.appendChild(li);
+      });
+    }
+
+    function scrollToHash() {
+      var hash = window.location.hash;
+      if (!hash || hash === '#') return;
+      var id = decodeURIComponent(hash.substring(1));
+      var el = document.getElementById(id);
+      if (!el && EN_ZH_ID_MAP[id]) {
+        el = document.getElementById(EN_ZH_ID_MAP[id]);
+      }
+      if (el) {
+        setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+      }
+    }
+
+    function render() {
+      var md = cachedMd;
+      if (currentLang === 'zh') md = translateMarkdown(md);
+      document.getElementById('content').innerHTML = marked.parse(md);
+      document.getElementById('tocArea').style.display = 'block';
+      document.getElementById('statusArea').style.display = 'none';
+      buildTOC(document.querySelectorAll('.content h4'));
+      scrollToHash();
+    }
+
+    function showError(msg) {
+      var s = document.getElementById('statusArea');
+      s.innerHTML = '<div class="error-box"><p>' + msg + '</p><button onclick="fetchReadme()">重试</button></div>';
+      s.style.display = 'block';
+      document.getElementById('tocArea').style.display = 'none';
+    }
+
+    function setLoading(loading) {
+      var btn = document.getElementById('refreshBtn');
+      var badge = document.getElementById('updateBadge');
+      if (loading) {
+        btn.classList.add('loading');
+        badge.textContent = '刷新中...';
+      } else {
+        btn.classList.remove('loading');
+        updateBadge();
+      }
+    }
+
+    function updateBadge() {
+      var badge = document.getElementById('updateBadge');
+      if (!lastFetched) {
+        badge.textContent = '';
+        return;
+      }
+      var ago = Math.floor((Date.now() - lastFetched) / 60000);
+      var text = ago < 1 ? '刚刚更新' : ago + ' 分钟前';
+      badge.textContent = text;
+      badge.className = 'update-badge' + (ago < 1 ? ' new' : '');
+    }
+
+    function fetchReadme() {
+      setLoading(true);
+      fetch(README_URL, { cache: 'no-store' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        })
+        .then(function (text) {
+          cachedMd = text;
+          lastFetched = Date.now();
+          localStorage.setItem('byox_cached_md', text);
+          localStorage.setItem('byox_cached_time', lastFetched);
+          render();
+          setLoading(false);
+          checkForUpdate();
+        })
+        .catch(function (e) {
+          setLoading(false);
+          if (cachedMd) {
+            render();
+            return;
+          }
+          var cache = localStorage.getItem('byox_cached_md');
+          if (cache) {
+            cachedMd = cache;
+            lastFetched = parseInt(localStorage.getItem('byox_cached_time')) || Date.now();
+            render();
+            document.getElementById('updateBadge').textContent = '(缓存)';
+          } else {
+            showError('无法获取内容: ' + e.message + '<br>请检查网络连接后重试。');
+          }
+        });
+    }
+
+    function checkForUpdate() {
+      fetch(COMMITS_API, { cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data || !data.length) return;
+          var sha = data[0].sha;
+          if (lastSha && sha !== lastSha) {
+            document.getElementById('updateBadge').textContent = '发现新版本!';
+            document.getElementById('updateBadge').className = 'update-badge new';
+            fetchReadme();
+          }
+          lastSha = sha;
+        })
+        .catch(function () {});
+    }
+
+    function manualRefresh() {
+      fetchReadme();
+    }
+
+    function startAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = setInterval(function () {
+        updateBadge();
+        checkForUpdate();
+      }, REFRESH_INTERVAL);
+    }
+
+    currentLang = detectLang();
+    switchLang(currentLang);
+
+    var cache = localStorage.getItem('byox_cached_md');
+    var cacheTime = localStorage.getItem('byox_cached_time');
+    if (cache) {
+      cachedMd = cache;
+      lastFetched = parseInt(cacheTime) || null;
+      render();
+      updateBadge();
+    }
+
+    fetchReadme();
+    startAutoRefresh();
+
+    document.getElementById('content').addEventListener('click', function(e) {
+      var el = e.target;
+      if (el.tagName !== 'A') return;
+      var href = el.getAttribute('href');
+      if (!href || href.charAt(0) !== '#') return;
+      var id = href.substring(1);
+      if (!id) return;
+      var heading = document.getElementById(id);
+      if (!heading && EN_ZH_ID_MAP[id]) {
+        heading = document.getElementById(EN_ZH_ID_MAP[id]);
+      }
+      if (heading) {
+        e.preventDefault();
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    window.addEventListener('hashchange', scrollToHash);
+
+    window.addEventListener('scroll', function () {
+      document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
+    });
+  </script>
+</body>
+</html>
