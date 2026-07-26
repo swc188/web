@@ -267,11 +267,11 @@
     <h2 class="section-title">这个项目到底是什么？</h2>
     <p class="section-subtitle">一个开源教程合集，汇集了所有"从零开始手把手教你造 X"的优质资源</p>
     <div class="stats">
-      <div class="stat-card"><div class="num" id="stat-stars">380K+</div><div class="label">GitHub Star</div></div>
-      <div class="stat-card"><div class="num" id="stat-classifications">31</div><div class="label">技术分类</div></div>
-      <div class="stat-card"><div class="num" id="stat-tutorials">200+</div><div class="label">教程总数</div></div>
-      <div class="stat-card"><div class="num" style="color:#3fb950">开源</div><div class="label">完全免费</div></div>
-      <div class="stat-card"><div class="num" style="color:#bc8cff">双语</div><div class="label">中英切换</div></div>
+      <div class="stat-card"><div class="num">380K+</div><div class="label">GitHub Star</div></div>
+      <div class="stat-card"><div class="num">9+</div><div class="label">领域覆盖</div></div>
+      <div class="stat-card"><div class="num">200+</div><div class="label">细分教程</div></div>
+      <div class="stat-card"><div class="num">31</div><div class="label">技术分类</div></div>
+      <div class="stat-card"><div class="num">0</div><div class="label">使用门槛，全免费</div></div>
     </div>
   </div>
 </section>
@@ -517,56 +517,6 @@
     <p>本站为社区自发维护的中文镜像，内容实时同步自 GitHub</p>
   </div>
 </footer>
-
-<script>
-(function() {
-  var README_URL = 'https://cdn.jsdelivr.net/gh/codecrafters-io/build-your-own-x@master/README.md';
-  var REPO_API = 'https://api.github.com/repos/codecrafters-io/build-your-own-x';
-
-  function formatNum(n) {
-    if (n >= 1000) return (n / 1000).toFixed(n % 1000 >= 100 ? 1 : 0) + 'K+';
-    return n + '+';
-  }
-
-  function parseReadme(text) {
-    var lines = text.split('\n');
-    var classifications = 0;
-    var tutorials = 0;
-    var inCategory = false;
-
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i].trim();
-      if (/^#### /.test(line)) {
-        classifications++;
-        inCategory = true;
-      } else if (inCategory && /^\* \[/.test(line)) {
-        tutorials++;
-      } else if (/^## /.test(line) && !/Tutorials/i.test(line)) {
-        inCategory = false;
-      }
-    }
-    return { classifications: classifications, tutorials: tutorials };
-  }
-
-  fetch(README_URL, { cache: 'no-store' })
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      var data = parseReadme(text);
-      document.getElementById('stat-classifications').textContent = data.classifications;
-      document.getElementById('stat-tutorials').textContent = formatNum(data.tutorials);
-    })
-    .catch(function() {});
-
-  fetch(REPO_API, { cache: 'no-store' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.stargazers_count) {
-        document.getElementById('stat-stars').textContent = formatNum(data.stargazers_count);
-      }
-    })
-    .catch(function() {});
-})();
-</script>
 
 </body>
 </html>
